@@ -14,6 +14,7 @@ import {
   navigationLinks,
   personalInfo,
 } from "@/lib/data";
+import { smoothScrollTo } from "@/components/smooth-scroll";
 
 type Point = {
   x: number;
@@ -26,8 +27,13 @@ type WebShot = {
   target: Point;
 };
 
+type Viewport = {
+  width: number;
+  height: number;
+};
+
 /* ============================================================
-   CURSOR WEB
+   THIN CURSOR WEB
 ============================================================ */
 
 function CursorWeb({
@@ -37,21 +43,18 @@ function CursorWeb({
   point: Point;
   visible: boolean;
 }) {
-  const previousPoint = useRef(point);
-
   const [trail, setTrail] = useState<Point[]>([]);
 
   useEffect(() => {
     if (!visible) {
+      setTrail([]);
       return;
     }
-
-    previousPoint.current = point;
 
     setTrail((current) => {
       const next = [...current, point];
 
-      if (next.length > 10) {
+      if (next.length > 12) {
         next.shift();
       }
 
@@ -69,12 +72,11 @@ function CursorWeb({
       aria-hidden="true"
     >
       <defs>
-        <filter id="webGlow">
+        <filter id="cursorWebGlow">
           <feGaussianBlur
-            stdDeviation="0.8"
+            stdDeviation="0.6"
             result="blur"
           />
-
           <feMerge>
             <feMergeNode in="blur" />
             <feMergeNode in="SourceGraphic" />
@@ -85,24 +87,26 @@ function CursorWeb({
       {trail.length > 1 && (
         <polyline
           points={trail
-            .map((item) => `${item.x},${item.y}`)
+            .map(
+              (item) =>
+                `${item.x},${item.y}`,
+            )
             .join(" ")}
           fill="none"
           stroke="rgba(255,255,255,0.38)"
           strokeWidth="0.7"
           strokeLinecap="round"
           strokeLinejoin="round"
-          filter="url(#webGlow)"
+          filter="url(#cursorWebGlow)"
         />
       )}
 
-      {/* Tiny cursor web node */}
       <circle
         cx={point.x}
         cy={point.y}
-        r="2"
+        r="1.8"
         fill="white"
-        opacity="0.8"
+        opacity="0.85"
       />
 
       <circle
@@ -110,7 +114,7 @@ function CursorWeb({
         cy={point.y}
         r="5"
         fill="none"
-        stroke="rgba(255,255,255,0.2)"
+        stroke="rgba(255,255,255,0.18)"
         strokeWidth="0.5"
       />
     </svg>
@@ -118,35 +122,37 @@ function CursorWeb({
 }
 
 /* ============================================================
-   THICK SPIDER WEB SHOT
+   THICK SPIDER-MAN WEB
 ============================================================ */
 
 function SpiderWebShot({
   web,
+  viewport,
 }: {
   web: WebShot;
+  viewport: Viewport;
 }) {
   const { start, target } = web;
 
   const dx = target.x - start.x;
   const dy = target.y - start.y;
 
-  const distance = Math.sqrt(dx * dx + dy * dy);
-
-  const angle =
-    Math.atan2(dy, dx) * (180 / Math.PI);
-
-  /*
-   * Web destination area.
-   */
-  const webRadius = Math.min(
-    Math.max(distance * 0.08, 45),
-    120,
+  const distance = Math.sqrt(
+    dx * dx + dy * dy,
   );
 
+  const angle =
+    Math.atan2(dy, dx) *
+    (180 / Math.PI);
+
   /*
-   * Radial web strands.
+   * Size of the web at the destination.
    */
+  const webRadius = Math.min(
+    Math.max(distance * 0.075, 55),
+    125,
+  );
+
   const radialAngles = [
     -60,
     -30,
@@ -163,25 +169,59 @@ function SpiderWebShot({
     300,
   ];
 
+  const rings = [
+    0.3,
+    0.5,
+    0.7,
+    0.88,
+    1,
+  ];
+
   /*
-   * Concentric web rings.
+   * Curved web path.
+   * This makes the web feel like it is
+   * actually swinging rather than being
+   * a straight rope.
    */
-  const rings = [0.35, 0.58, 0.8, 1];
+  const controlX =
+    (start.x + target.x) / 2 +
+    Math.sin(angle * (Math.PI / 180)) *
+      Math.min(distance * 0.12, 100);
+
+  const controlY =
+    (start.y + target.y) / 2 -
+    Math.cos(angle * (Math.PI / 180)) *
+      Math.min(distance * 0.12, 100);
+
+  const mainPath = `
+    M ${start.x} ${start.y}
+    Q ${controlX} ${controlY}
+      ${target.x} ${target.y}
+  `;
 
   return (
     <motion.svg
       className="pointer-events-none fixed inset-0 z-[100] h-full w-full"
-      viewBox={`0 0 ${window.innerWidth} ${window.innerHeight}`}
+      viewBox={`0 0 ${viewport.width} ${viewport.height}`}
       preserveAspectRatio="none"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      initial={{
+        opacity: 0,
+      }}
+      animate={{
+        opacity: 1,
+      }}
+      exit={{
+        opacity: 0,
+      }}
+      transition={{
+        duration: 0.15,
+      }}
       aria-hidden="true"
     >
       <defs>
-        <filter id="thickWebGlow">
+        <filter id="thickSpiderWebGlow">
           <feGaussianBlur
-            stdDeviation="1.4"
+            stdDeviation="1.5"
             result="blur"
           />
 
@@ -193,16 +233,16 @@ function SpiderWebShot({
       </defs>
 
       {/* ======================================================
-          MAIN WEB THREAD
+          MAIN THICK WEB
       ======================================================= */}
 
       <motion.path
-        d={`M ${start.x} ${start.y} L ${target.x} ${target.y}`}
+        d={mainPath}
         fill="none"
-        stroke="rgba(255,255,255,0.95)"
-        strokeWidth="3"
+        stroke="rgba(255,255,255,0.98)"
+        strokeWidth="4"
         strokeLinecap="round"
-        filter="url(#thickWebGlow)"
+        filter="url(#thickSpiderWebGlow)"
         initial={{
           pathLength: 0,
         }}
@@ -210,86 +250,57 @@ function SpiderWebShot({
           pathLength: 1,
         }}
         transition={{
-          duration: 0.32,
+          duration: 0.34,
           ease: [0.22, 1, 0.36, 1],
         }}
       />
 
       {/* ======================================================
-          SECONDARY THICK STRANDS
+          SECONDARY WEB STRANDS
       ======================================================= */}
 
-      {[0, 1, 2, 3].map((index) => {
-        const offset =
-          (index - 1.5) * 4;
+      {[0, 1, 2, 3].map(
+        (index) => {
+          const offset =
+            (index - 1.5) * 5;
 
-        const endX =
-          target.x +
-          Math.cos(angle * (Math.PI / 180) + Math.PI / 2) *
-            offset;
-
-        const endY =
-          target.y +
-          Math.sin(angle * (Math.PI / 180) + Math.PI / 2) *
-            offset;
-
-        return (
-          <motion.path
-            key={`strand-${index}`}
-            d={`M ${start.x} ${start.y} L ${endX} ${endY}`}
-            fill="none"
-            stroke={
-              index === 1 || index === 2
-                ? "rgba(255,255,255,0.8)"
-                : "rgba(255,255,255,0.42)"
-            }
-            strokeWidth={index === 1 || index === 2 ? 1.5 : 1}
-            strokeLinecap="round"
-            initial={{
-              pathLength: 0,
-              opacity: 0,
-            }}
-            animate={{
-              pathLength: 1,
-              opacity: 1,
-            }}
-            transition={{
-              duration: 0.42,
-              delay: index * 0.025,
-              ease: [0.22, 1, 0.36, 1],
-            }}
-          />
-        );
-      })}
-
-      {/* ======================================================
-          SPIDER WEB AT DESTINATION
-      ======================================================= */}
-
-      <g
-        transform={`translate(${target.x}, ${target.y})`}
-      >
-        {/* Radial strands */}
-        {radialAngles.map((webAngle, index) => {
           const radians =
-            (webAngle * Math.PI) / 180;
+            (angle * Math.PI) / 180 +
+            Math.PI / 2;
 
-          const x =
-            Math.cos(radians) * webRadius;
+          const endX =
+            target.x +
+            Math.cos(radians) *
+              offset;
 
-          const y =
-            Math.sin(radians) * webRadius;
+          const endY =
+            target.y +
+            Math.sin(radians) *
+              offset;
+
+          const secondaryPath = `
+            M ${start.x} ${start.y}
+            Q ${controlX + offset}
+              ${controlY + offset}
+              ${endX} ${endY}
+          `;
 
           return (
-            <motion.line
-              key={`radial-${index}`}
-              x1="0"
-              y1="0"
-              x2={x}
-              y2={y}
-              stroke="rgba(255,255,255,0.78)"
+            <motion.path
+              key={`strand-${index}`}
+              d={secondaryPath}
+              fill="none"
+              stroke={
+                index === 1 ||
+                index === 2
+                  ? "rgba(255,255,255,0.78)"
+                  : "rgba(255,255,255,0.38)"
+              }
               strokeWidth={
-                index % 3 === 0 ? 1.7 : 1
+                index === 1 ||
+                index === 2
+                  ? 1.7
+                  : 0.9
               }
               strokeLinecap="round"
               initial={{
@@ -301,70 +312,147 @@ function SpiderWebShot({
                 opacity: 1,
               }}
               transition={{
-                duration: 0.4,
-                delay: 0.12 + index * 0.018,
-                ease: "easeOut",
+                duration: 0.42,
+                delay:
+                  0.025 * index,
+                ease: [
+                  0.22,
+                  1,
+                  0.36,
+                  1,
+                ],
               }}
             />
           );
-        })}
+        },
+      )}
 
-        {/* Concentric web rings */}
-        {rings.map((scale, index) => {
-          const radius =
-            webRadius * scale;
+      {/* ======================================================
+          DESTINATION WEB
+      ======================================================= */}
 
-          return (
-            <motion.circle
-              key={`ring-${index}`}
-              cx="0"
-              cy="0"
-              r={radius}
-              fill="none"
-              stroke="rgba(255,255,255,0.65)"
-              strokeWidth={
-                index === rings.length - 1
-                  ? 1.8
-                  : 1
-              }
-              initial={{
-                pathLength: 0,
-                opacity: 0,
-                scale: 0.6,
-              }}
-              animate={{
-                pathLength: 1,
-                opacity: 1,
-                scale: 1,
-              }}
-              transition={{
-                duration: 0.45,
-                delay: 0.16 + index * 0.06,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-            />
-          );
-        })}
+      <g
+        transform={`translate(${target.x}, ${target.y})`}
+      >
+        {/* Radial strands */}
+        {radialAngles.map(
+          (webAngle, index) => {
+            const radians =
+              (webAngle * Math.PI) /
+              180;
 
-        {/* Center impact */}
+            const x =
+              Math.cos(radians) *
+              webRadius;
+
+            const y =
+              Math.sin(radians) *
+              webRadius;
+
+            return (
+              <motion.line
+                key={`radial-${index}`}
+                x1="0"
+                y1="0"
+                x2={x}
+                y2={y}
+                stroke="rgba(255,255,255,0.78)"
+                strokeWidth={
+                  index % 3 === 0
+                    ? 1.6
+                    : 0.9
+                }
+                strokeLinecap="round"
+                initial={{
+                  pathLength: 0,
+                  opacity: 0,
+                }}
+                animate={{
+                  pathLength: 1,
+                  opacity: 1,
+                }}
+                transition={{
+                  duration: 0.42,
+                  delay:
+                    0.12 +
+                    index * 0.018,
+                  ease: "easeOut",
+                }}
+              />
+            );
+          },
+        )}
+
+        {/* Web rings */}
+        {rings.map(
+          (scale, index) => {
+            const radius =
+              webRadius * scale;
+
+            return (
+              <motion.circle
+                key={`ring-${index}`}
+                cx="0"
+                cy="0"
+                r={radius}
+                fill="none"
+                stroke="rgba(255,255,255,0.66)"
+                strokeWidth={
+                  index ===
+                  rings.length - 1
+                    ? 1.7
+                    : 0.9
+                }
+                initial={{
+                  pathLength: 0,
+                  opacity: 0,
+                  scale: 0.55,
+                }}
+                animate={{
+                  pathLength: 1,
+                  opacity: 1,
+                  scale: 1,
+                }}
+                transition={{
+                  duration: 0.45,
+                  delay:
+                    0.14 +
+                    index * 0.055,
+                  ease: [
+                    0.22,
+                    1,
+                    0.36,
+                    1,
+                  ],
+                }}
+              />
+            );
+          },
+        )}
+
+        {/* White impact */}
         <motion.circle
           cx="0"
           cy="0"
           r="7"
-          fill="rgba(255,255,255,0.9)"
+          fill="white"
           initial={{
             scale: 0,
           }}
           animate={{
-            scale: [0, 1.5, 0.8],
+            scale: [
+              0,
+              1.6,
+              0.85,
+            ],
           }}
           transition={{
-            duration: 0.5,
+            duration: 0.48,
             ease: "easeOut",
           }}
         />
 
-        {/* Red impact ring */}
+        {/* Red impact pulse */}
         <motion.circle
           cx="0"
           cy="0"
@@ -377,8 +465,16 @@ function SpiderWebShot({
             opacity: 0,
           }}
           animate={{
-            scale: [0, 1.5, 1],
-            opacity: [0, 1, 0.5],
+            scale: [
+              0,
+              1.5,
+              1,
+            ],
+            opacity: [
+              0,
+              1,
+              0.35,
+            ],
           }}
           transition={{
             duration: 0.55,
@@ -419,8 +515,47 @@ export function Navigation() {
   const [webShot, setWebShot] =
     useState<WebShot | null>(null);
 
+  const [viewport, setViewport] =
+    useState<Viewport>({
+      width: 1920,
+      height: 1080,
+    });
+
+  const [isSwinging, setIsSwinging] =
+    useState(false);
+
+  const swingTimer =
+    useRef<number | null>(null);
+
   /* ==========================================================
-     SCROLL
+     VIEWPORT
+  ========================================================== */
+
+  useEffect(() => {
+    const updateViewport = () => {
+      setViewport({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    updateViewport();
+
+    window.addEventListener(
+      "resize",
+      updateViewport,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "resize",
+        updateViewport,
+      );
+    };
+  }, []);
+
+  /* ==========================================================
+     SCROLL STATE
   ========================================================== */
 
   useEffect(() => {
@@ -435,7 +570,9 @@ export function Navigation() {
     window.addEventListener(
       "scroll",
       handleScroll,
-      { passive: true },
+      {
+        passive: true,
+      },
     );
 
     return () => {
@@ -447,7 +584,7 @@ export function Navigation() {
   }, []);
 
   /* ==========================================================
-     CURSOR TRACKING
+     CURSOR
   ========================================================== */
 
   useEffect(() => {
@@ -499,8 +636,12 @@ export function Navigation() {
 
   useEffect(() => {
     const ids =
-      navigationLinks.map((item) =>
-        item.href.replace("#", ""),
+      navigationLinks.map(
+        (item) =>
+          item.href.replace(
+            "#",
+            "",
+          ),
       );
 
     const sections = ids
@@ -517,13 +658,17 @@ export function Navigation() {
     const observer =
       new IntersectionObserver(
         (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              setActiveSection(
-                `#${entry.target.id}`,
-              );
-            }
-          });
+          entries.forEach(
+            (entry) => {
+              if (
+                entry.isIntersecting
+              ) {
+                setActiveSection(
+                  `#${entry.target.id}`,
+                );
+              }
+            },
+          );
         },
         {
           rootMargin:
@@ -532,8 +677,9 @@ export function Navigation() {
         },
       );
 
-    sections.forEach((section) =>
-      observer.observe(section),
+    sections.forEach(
+      (section) =>
+        observer.observe(section),
     );
 
     return () =>
@@ -541,7 +687,7 @@ export function Navigation() {
   }, []);
 
   /* ==========================================================
-     WEB NAVIGATION
+     WEB-SWING NAVIGATION
   ========================================================== */
 
   const handleNavigation = (
@@ -549,6 +695,10 @@ export function Navigation() {
     href: string,
   ) => {
     event.preventDefault();
+
+    if (isSwinging) {
+      return;
+    }
 
     const targetId =
       href.replace("#", "");
@@ -578,61 +728,103 @@ export function Navigation() {
     const targetRect =
       target.getBoundingClientRect();
 
+    /*
+     * Web attaches slightly above
+     * the destination section.
+     */
     const targetPoint = {
-      x:
-        window.innerWidth / 2,
+      x: viewport.width / 2,
 
-      y:
-        Math.max(
-          120,
-          Math.min(
-            targetRect.top + 100,
-            window.innerHeight - 100,
-          ),
+      y: Math.max(
+        120,
+        Math.min(
+          targetRect.top + 100,
+          viewport.height - 100,
         ),
+      ),
     };
 
     setActiveSection(href);
     setIsOpen(false);
 
-    /* Reduced-motion fallback */
+    /* ========================================================
+       REDUCED MOTION
+    ======================================================== */
+
     if (shouldReduceMotion) {
-      target.scrollIntoView({
-        behavior: "auto",
-        block: "start",
+      smoothScrollTo(target, {
+        immediate: false,
+        duration: 0.6,
       });
 
       return;
     }
 
     /* ========================================================
-       FIRE THICK WEB
+       START WEB SWING
     ======================================================== */
 
+    setIsSwinging(true);
+
+    const page =
+      document.querySelector(
+        ".web-swing-page",
+      );
+
+    page?.classList.remove(
+      "web-swing-settle",
+    );
+
+    /*
+     * Fire thick web.
+     */
     setWebShot({
       id: Date.now(),
       start,
       target: targetPoint,
     });
 
+    /*
+     * Begin page pull.
+     */
+    page?.classList.add(
+      "web-swing-active",
+    );
+
     /* ========================================================
-       PAGE PULL
+       WEB ATTACH → PAGE PULL
     ======================================================== */
 
     window.setTimeout(() => {
-      target.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
+      smoothScrollTo(target, {
+        duration: 0.95,
       });
-    }, 260);
+    }, 240);
 
     /* ========================================================
-       RETRACT WEB
+       RECOIL
     ======================================================== */
 
-    window.setTimeout(() => {
-      setWebShot(null);
-    }, 1200);
+    swingTimer.current =
+      window.setTimeout(() => {
+        setWebShot(null);
+
+        page?.classList.remove(
+          "web-swing-active",
+        );
+
+        page?.classList.add(
+          "web-swing-settle",
+        );
+
+        window.setTimeout(() => {
+          page?.classList.remove(
+            "web-swing-settle",
+          );
+
+          setIsSwinging(false);
+        }, 420);
+      }, 1150);
   };
 
   /* ==========================================================
@@ -646,43 +838,84 @@ export function Navigation() {
 
     setIsOpen(false);
     setWebShot(null);
+    setIsSwinging(false);
     setActiveSection("#home");
+
+    const page =
+      document.querySelector(
+        ".web-swing-page",
+      );
+
+    page?.classList.remove(
+      "web-swing-active",
+      "web-swing-settle",
+    );
 
     window.scrollTo({
       top: 0,
-      behavior: shouldReduceMotion
-        ? "auto"
-        : "smooth",
+      behavior:
+        shouldReduceMotion
+          ? "auto"
+          : "smooth",
     });
   };
 
+  /* ==========================================================
+     CLEANUP
+  ========================================================== */
+
+  useEffect(() => {
+    return () => {
+      if (swingTimer.current) {
+        window.clearTimeout(
+          swingTimer.current,
+        );
+      }
+
+      const page =
+        document.querySelector(
+          ".web-swing-page",
+        );
+
+      page?.classList.remove(
+        "web-swing-active",
+        "web-swing-settle",
+      );
+    };
+  }, []);
+
+  /* ==========================================================
+     RENDER
+  ========================================================== */
+
   return (
     <>
-      {/* =====================================================
-          NORMAL CURSOR WEB
-      ====================================================== */}
+      {/* ======================================================
+          THIN CURSOR WEB
+      ======================================================= */}
 
       <CursorWeb
         point={cursor}
         visible={cursorVisible}
       />
 
-      {/* =====================================================
-          THICK SPIDER WEB
-      ====================================================== */}
+      {/* ======================================================
+          THICK WEB ON NAVIGATION
+      ======================================================= */}
 
       <AnimatePresence>
-        {webShot && (
+        {webShot ? (
           <SpiderWebShot
             key={webShot.id}
             web={webShot}
+            viewport={viewport}
           />
-        )}
+        ) : null}
       </AnimatePresence>
 
-      {/* =====================================================
-          NAVIGATION
-      ====================================================== */}
+      {/* ======================================================
+          NAVIGATION BAR
+      ======================================================= */}
 
       <motion.header
         className="fixed inset-x-0 top-0 z-50 px-4 py-4 md:px-8"
@@ -700,7 +933,12 @@ export function Navigation() {
         }}
         transition={{
           duration: 0.7,
-          ease: [0.22, 1, 0.36, 1],
+          ease: [
+            0.22,
+            1,
+            0.36,
+            1,
+          ],
         }}
       >
         <nav
@@ -711,9 +949,9 @@ export function Navigation() {
           }`}
           aria-label="Primary navigation"
         >
-          {/* =================================================
+          {/* ==================================================
               LOGO
-          ================================================== */}
+          =================================================== */}
 
           <a
             href="#home"
@@ -725,9 +963,9 @@ export function Navigation() {
             <span className="absolute -bottom-1 left-0 h-px w-0 bg-red-500 transition-all duration-300 group-hover:w-full" />
           </a>
 
-          {/* =================================================
-              DESKTOP NAV
-          ================================================== */}
+          {/* ==================================================
+              DESKTOP NAVIGATION
+          =================================================== */}
 
           <ul className="hidden items-center gap-1 md:flex">
             {navigationLinks.map(
@@ -767,7 +1005,7 @@ export function Navigation() {
                         }`}
                       />
 
-                      {/* Small web strand */}
+                      {/* Small hover web */}
                       <span className="absolute bottom-0 left-1/2 h-px w-0 -translate-x-1/2 bg-red-400 transition-all duration-300 group-hover:w-1/2" />
                     </a>
                   </li>
@@ -776,9 +1014,9 @@ export function Navigation() {
             )}
           </ul>
 
-          {/* =================================================
+          {/* ==================================================
               MOBILE BUTTON
-          ================================================== */}
+          =================================================== */}
 
           <button
             type="button"
@@ -806,7 +1044,7 @@ export function Navigation() {
         ==================================================== */}
 
         <AnimatePresence>
-          {isOpen && (
+          {isOpen ? (
             <motion.div
               id="mobile-menu"
               initial={{
@@ -868,7 +1106,7 @@ export function Navigation() {
                 )}
               </ul>
             </motion.div>
-          )}
+          ) : null}
         </AnimatePresence>
       </motion.header>
     </>

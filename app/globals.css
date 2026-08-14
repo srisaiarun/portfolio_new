@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* ============================================================
+   GLOBAL DESIGN TOKENS
+============================================================ */
+
 :root {
   --background: #050505;
   --foreground: #f2f2f2;
@@ -15,22 +19,9 @@
   --font-display: var(--font-display);
 }
 
-body {
-  margin: 0;
-  overflow-x: hidden;
-  background-color: var(--background);
-  background-image:
-    radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.1), transparent 22%),
-    radial-gradient(circle at 80% 0%, rgba(237, 58, 58, 0.1), transparent 20%),
-    linear-gradient(to bottom, #040404, #090909);
-  color: var(--foreground);
-  font-family: var(--font-sans), sans-serif;
-  text-rendering: geometricPrecision;
-}
-
-.font-display {
-  font-family: var(--font-display), sans-serif;
-}
+/* ============================================================
+   GLOBAL
+============================================================ */
 
 * {
   box-sizing: border-box;
@@ -38,7 +29,50 @@ body {
 
 html {
   scroll-behavior: smooth;
+  background: var(--background);
 }
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+
+  background-color: var(--background);
+
+  background-image:
+    radial-gradient(
+      circle at 10% 10%,
+      rgba(255, 255, 255, 0.1),
+      transparent 22%
+    ),
+    radial-gradient(
+      circle at 80% 0%,
+      rgba(237, 58, 58, 0.1),
+      transparent 20%
+    ),
+    linear-gradient(
+      to bottom,
+      #040404,
+      #090909
+    );
+
+  color: var(--foreground);
+
+  font-family:
+    var(--font-sans),
+    sans-serif;
+
+  text-rendering: geometricPrecision;
+}
+
+.font-display {
+  font-family:
+    var(--font-display),
+    sans-serif;
+}
+
+/* ============================================================
+   CUSTOM CURSOR
+============================================================ */
 
 a,
 button {
@@ -52,36 +86,439 @@ button {
   }
 }
 
+/* ============================================================
+   HERO
+============================================================ */
+
 .hero-grid::after {
   content: "";
+
   position: absolute;
+
   left: -20%;
   bottom: 12%;
+
   width: 70%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.35),
+      transparent
+    );
+
   transform: rotate(-8deg);
+
+  pointer-events: none;
 }
 
 .hero-web {
   background-image:
-    radial-gradient(circle at 70% 42%, rgba(237, 58, 58, 0.18), transparent 45%),
-    repeating-radial-gradient(circle at 72% 46%, rgba(255, 255, 255, 0.1) 0 1px, transparent 1px 28px),
-    linear-gradient(130deg, transparent 60%, rgba(237, 58, 58, 0.15));
+    radial-gradient(
+      circle at 70% 42%,
+      rgba(237, 58, 58, 0.18),
+      transparent 45%
+    ),
+    repeating-radial-gradient(
+      circle at 72% 46%,
+      rgba(255, 255, 255, 0.1) 0 1px,
+      transparent 1px 28px
+    ),
+    linear-gradient(
+      130deg,
+      transparent 60%,
+      rgba(237, 58, 58, 0.15)
+    );
 }
 
 .spider-abstract {
   background-image:
-    radial-gradient(circle at 65% 35%, rgba(237, 58, 58, 0.35), transparent 45%),
-    radial-gradient(circle at 70% 68%, rgba(255, 255, 255, 0.09), transparent 48%),
-    linear-gradient(150deg, transparent 55%, rgba(255, 255, 255, 0.1));
+    radial-gradient(
+      circle at 65% 35%,
+      rgba(237, 58, 58, 0.35),
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at 70% 68%,
+      rgba(255, 255, 255, 0.09),
+      transparent 48%
+    ),
+    linear-gradient(
+      150deg,
+      transparent 55%,
+      rgba(255, 255, 255, 0.1)
+    );
 }
+
+/* ============================================================
+   PROJECT WEB
+============================================================ */
 
 .project-web {
   background-image:
-    radial-gradient(circle at 80% 16%, rgba(237, 58, 58, 0.18), transparent 35%),
-    repeating-linear-gradient(120deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08) 1px, transparent 1px, transparent 18px);
+    radial-gradient(
+      circle at 80% 16%,
+      rgba(237, 58, 58, 0.18),
+      transparent 35%
+    ),
+    repeating-linear-gradient(
+      120deg,
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0.08) 1px,
+      transparent 1px,
+      transparent 18px
+    );
 }
+
+/* ============================================================
+   SECTION / UI POLISH
+============================================================ */
+
+::selection {
+  background: rgba(237, 58, 58, 0.85);
+  color: white;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(237, 58, 58, 0.7);
+}
+
+/* ============================================================
+   SPIDER-MAN CINEMATIC PRELOADER
+============================================================ */
+
+.spider-preloader {
+  isolation: isolate;
+  transform: translateZ(0);
+  will-change: opacity;
+}
+
+/* Atmospheric red pulse */
+
+.spider-preloader::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(237, 58, 58, 0.1),
+      transparent 35%
+    );
+
+  pointer-events: none;
+
+  z-index: 1;
+
+  animation:
+    spiderRedPulse
+    2.5s
+    ease-out
+    both;
+}
+
+/* ============================================================
+   INTRO WEB
+============================================================ */
+
+.spider-intro-web {
+  position: absolute;
+  inset: -20%;
+
+  opacity: 0.32;
+
+  background-image:
+    repeating-radial-gradient(
+      circle at 50% 50%,
+      transparent 0,
+      transparent 42px,
+      rgba(255, 255, 255, 0.12) 43px,
+      transparent 44px
+    ),
+    repeating-conic-gradient(
+      from 0deg at 50% 50%,
+      transparent 0deg,
+      transparent 11deg,
+      rgba(255, 255, 255, 0.08) 12deg,
+      transparent 13deg
+    );
+
+  mask-image:
+    radial-gradient(
+      circle at center,
+      black 0%,
+      rgba(0, 0, 0, 0.8) 38%,
+      transparent 72%
+    );
+
+  -webkit-mask-image:
+    radial-gradient(
+      circle at center,
+      black 0%,
+      rgba(0, 0, 0, 0.8) 38%,
+      transparent 72%
+    );
+
+  pointer-events: none;
+
+  z-index: 2;
+
+  animation:
+    spiderWebExpand
+    3s
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both;
+}
+
+@keyframes spiderWebExpand {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+
+  25% {
+    opacity: 0.2;
+    transform: scale(0.55);
+  }
+
+  60% {
+    opacity: 0.32;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0.24;
+    transform: scale(1.12);
+  }
+}
+
+@keyframes spiderRedPulse {
+  0% {
+    opacity: 0;
+  }
+
+  35% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.35;
+  }
+}
+
+/* ============================================================
+   SPIDER-MAN WEB SWING
+============================================================ */
+
+.web-swing-page {
+  transform-origin: 50% 15%;
+  will-change: transform;
+}
+
+/*
+ * Initial web pull.
+ */
+
+.web-swing-page.web-swing-active {
+  animation:
+    webSwingPull
+    0.95s
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both;
+}
+
+/*
+ * Small elastic landing.
+ */
+
+.web-swing-page.web-swing-settle {
+  animation:
+    webSwingSettle
+    0.42s
+    cubic-bezier(0.34, 1.56, 0.64, 1)
+    both;
+}
+
+@keyframes webSwingPull {
+  0% {
+    transform:
+      perspective(1400px)
+      rotateX(0deg)
+      rotateZ(0deg)
+      scale(1)
+      translateY(0);
+  }
+
+  18% {
+    transform:
+      perspective(1400px)
+      rotateX(1deg)
+      rotateZ(-0.4deg)
+      scale(1.006)
+      translateY(-4px);
+  }
+
+  42% {
+    transform:
+      perspective(1400px)
+      rotateX(2.2deg)
+      rotateZ(0.65deg)
+      scale(1.014)
+      translateY(-12px);
+  }
+
+  65% {
+    transform:
+      perspective(1400px)
+      rotateX(-1deg)
+      rotateZ(-0.3deg)
+      scale(1.006)
+      translateY(-5px);
+  }
+
+  82% {
+    transform:
+      perspective(1400px)
+      rotateX(0.4deg)
+      rotateZ(0.12deg)
+      scale(1.002)
+      translateY(-2px);
+  }
+
+  100% {
+    transform:
+      perspective(1400px)
+      rotateX(0deg)
+      rotateZ(0deg)
+      scale(1)
+      translateY(0);
+  }
+}
+
+@keyframes webSwingSettle {
+  0% {
+    transform:
+      perspective(1400px)
+      rotateZ(0deg)
+      scale(1);
+  }
+
+  30% {
+    transform:
+      perspective(1400px)
+      rotateZ(-0.4deg)
+      scale(1.004);
+  }
+
+  60% {
+    transform:
+      perspective(1400px)
+      rotateZ(0.2deg)
+      scale(0.999);
+  }
+
+  82% {
+    transform:
+      perspective(1400px)
+      rotateZ(-0.08deg)
+      scale(1.001);
+  }
+
+  100% {
+    transform:
+      perspective(1400px)
+      rotateZ(0deg)
+      scale(1);
+  }
+}
+
+/* ============================================================
+   SPIDER WEB / INTERACTION POLISH
+============================================================ */
+
+/*
+ * Prevent accidental selection while the
+ * cinematic navigation animation is running.
+ */
+
+.web-swing-page.web-swing-active {
+  user-select: none;
+}
+
+/*
+ * Slight atmospheric red flash during a web swing.
+ */
+
+.web-swing-page.web-swing-active::before {
+  content: "";
+
+  position: fixed;
+  inset: 0;
+
+  pointer-events: none;
+
+  z-index: 40;
+
+  background:
+    radial-gradient(
+      circle at 50% 30%,
+      rgba(237, 58, 58, 0.08),
+      transparent 40%
+    );
+
+  opacity: 0;
+
+  animation:
+    swingAtmosphere
+    0.95s
+    ease-out
+    both;
+}
+
+@keyframes swingAtmosphere {
+  0% {
+    opacity: 0;
+  }
+
+  35% {
+    opacity: 1;
+  }
+
+  70% {
+    opacity: 0.3;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ============================================================
+   OLD PRELOADER COMPATIBILITY
+============================================================ */
+
+/*
+ * These classes are retained only so that
+ * an older component version does not create
+ * a broken animation if temporarily present.
+ */
 
 @keyframes preloaderFadeOut {
   to {
@@ -95,27 +532,76 @@ button {
     opacity: 0;
     transform: translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.preloader-overlay {
-  animation: preloaderFadeOut 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.9s forwards;
-}
-
-.preloader-mark {
-  animation: preloaderMarkIn 0.45s ease-out both;
-}
+/* ============================================================
+   REDUCED MOTION
+============================================================ */
 
 @media (prefers-reduced-motion: reduce) {
-  .preloader-overlay {
-    animation-duration: 0.2s;
-    animation-delay: 0.12s;
+  html {
+    scroll-behavior: auto;
   }
 
-  .preloader-mark {
+  .spider-intro-web {
+    animation: none;
+    opacity: 0.2;
+    transform: none;
+  }
+
+  .spider-preloader::before {
+    animation: none;
+    opacity: 0.25;
+  }
+
+  .web-swing-page.web-swing-active,
+  .web-swing-page.web-swing-settle {
+    animation: none !important;
+  }
+
+  .web-swing-page.web-swing-active::before {
+    animation: none;
+  }
+}
+
+/* ============================================================
+   MOBILE OPTIMIZATION
+============================================================ */
+
+@media (max-width: 768px) {
+  .spider-intro-web {
+    opacity: 0.2;
+    background-size: auto;
+  }
+
+  .web-swing-page.web-swing-active {
+    /*
+     * Less aggressive movement on phones.
+     */
+    animation-duration: 0.7s;
+  }
+
+  .web-swing-page.web-swing-settle {
+    animation-duration: 0.3s;
+  }
+}
+
+/* ============================================================
+   TOUCH DEVICES
+============================================================ */
+
+@media (pointer: coarse) {
+  .spider-intro-web {
+    opacity: 0.18;
+  }
+
+  .web-swing-page.web-swing-active {
+    transform: none;
     animation: none;
   }
 }

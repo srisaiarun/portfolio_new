@@ -3,9 +3,39 @@
 import { useEffect } from "react";
 import Lenis from "lenis";
 
+let lenisInstance: Lenis | null = null;
+
+export function smoothScrollTo(
+  target: HTMLElement,
+  options?: {
+    duration?: number;
+    immediate?: boolean;
+  },
+) {
+  if (!lenisInstance) {
+    target.scrollIntoView({
+      behavior: options?.immediate ? "auto" : "smooth",
+      block: "start",
+    });
+
+    return;
+  }
+
+  lenisInstance.scrollTo(target, {
+    duration: options?.duration ?? 1.15,
+    immediate: options?.immediate ?? false,
+    lock: false,
+  });
+}
+
 export function SmoothScroll() {
   useEffect(() => {
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduceMotion = window
+      .matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      )
+      .matches;
+
     if (reduceMotion) {
       return;
     }
@@ -16,6 +46,8 @@ export function SmoothScroll() {
       wheelMultiplier: 0.95,
       touchMultiplier: 1.5,
     });
+
+    lenisInstance = lenis;
 
     let rafId = 0;
 
@@ -28,6 +60,11 @@ export function SmoothScroll() {
 
     return () => {
       cancelAnimationFrame(rafId);
+
+      if (lenisInstance === lenis) {
+        lenisInstance = null;
+      }
+
       lenis.destroy();
     };
   }, []);
