@@ -1,26 +1,121 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #050505;
+  --foreground: #f2f2f2;
+  --accent: #ed3a3a;
+  --muted: #b9b9b9;
+  --grid: rgba(255, 255, 255, 0.08);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
 }
 
 body {
-  background: var(--background);
+  margin: 0;
+  overflow-x: hidden;
+  background-color: var(--background);
+  background-image:
+    radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.1), transparent 22%),
+    radial-gradient(circle at 80% 0%, rgba(237, 58, 58, 0.1), transparent 20%),
+    linear-gradient(to bottom, #040404, #090909);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), sans-serif;
+  text-rendering: geometricPrecision;
+}
+
+.font-display {
+  font-family: var(--font-display), sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+a,
+button {
+  cursor: none;
+}
+
+@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+  a,
+  button {
+    cursor: pointer;
+  }
+}
+
+.hero-grid::after {
+  content: "";
+  position: absolute;
+  left: -20%;
+  bottom: 12%;
+  width: 70%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transform: rotate(-8deg);
+}
+
+.hero-web {
+  background-image:
+    radial-gradient(circle at 70% 42%, rgba(237, 58, 58, 0.18), transparent 45%),
+    repeating-radial-gradient(circle at 72% 46%, rgba(255, 255, 255, 0.1) 0 1px, transparent 1px 28px),
+    linear-gradient(130deg, transparent 60%, rgba(237, 58, 58, 0.15));
+}
+
+.spider-abstract {
+  background-image:
+    radial-gradient(circle at 65% 35%, rgba(237, 58, 58, 0.35), transparent 45%),
+    radial-gradient(circle at 70% 68%, rgba(255, 255, 255, 0.09), transparent 48%),
+    linear-gradient(150deg, transparent 55%, rgba(255, 255, 255, 0.1));
+}
+
+.project-web {
+  background-image:
+    radial-gradient(circle at 80% 16%, rgba(237, 58, 58, 0.18), transparent 35%),
+    repeating-linear-gradient(120deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08) 1px, transparent 1px, transparent 18px);
+}
+
+@keyframes preloaderFadeOut {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@keyframes preloaderMarkIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.preloader-overlay {
+  animation: preloaderFadeOut 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.9s forwards;
+}
+
+.preloader-mark {
+  animation: preloaderMarkIn 0.45s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .preloader-overlay {
+    animation-duration: 0.2s;
+    animation-delay: 0.12s;
+  }
+
+  .preloader-mark {
+    animation: none;
+  }
 }
