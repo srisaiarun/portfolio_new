@@ -1,6 +1,7 @@
 import { access } from "node:fs/promises";
 import { constants } from "node:fs";
 import path from "node:path";
+
 import { About } from "@/components/about";
 import { Certifications } from "@/components/certifications";
 import { CodeSection } from "@/components/code-section";
@@ -17,7 +18,11 @@ import { SmoothScroll } from "@/components/smooth-scroll";
 
 async function fileExists(relativePath: string) {
   try {
-    await access(path.join(process.cwd(), "public", relativePath), constants.F_OK);
+    await access(
+      path.join(process.cwd(), "public", relativePath),
+      constants.F_OK,
+    );
+
     return true;
   } catch {
     return false;
@@ -25,9 +30,8 @@ async function fileExists(relativePath: string) {
 }
 
 export default async function Home() {
-  const [hasProfileImage, hasSecondaryImage, hasSpiderImage] = await Promise.all([
+  const [hasProfileImage, hasSpiderImage] = await Promise.all([
     fileExists("images/profile.jpg"),
-    fileExists("images/profile-secondary.jpg"),
     fileExists("images/spiderman_arun.png"),
   ]);
 
@@ -39,8 +43,13 @@ export default async function Home() {
       <Navigation />
 
       <main className="relative overflow-x-clip">
-        <Hero hasProfileImage={hasProfileImage} hasSpiderImage={hasSpiderImage} />
-        <About hasSecondaryImage={hasSecondaryImage} />
+        <Hero
+          hasProfileImage={hasProfileImage}
+          hasSpiderImage={hasSpiderImage}
+        />
+
+        <About />
+
         <Skills />
         <Journey />
         <CodeSection />
