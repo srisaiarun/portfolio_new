@@ -76,7 +76,7 @@ export const personalInfo: PersonalInfo = {
   imagePaths: {
     profile: "/images/profile.jpg",
     profileSecondary: "/images/profile-secondary.jpg",
-    spiderman: "/images/spiderman.png",
+    spiderman: "/images/spiderman_arun.png",
   },
 };
 
@@ -167,6 +167,7 @@ export const projects: ProjectItem[] = [
   {
     id: "01",
     title: "GraphRAG Engineering Intelligence Platform",
+    subtitle: "AI-Powered Codebase Intelligence",
     description:
       "An engineering intelligence platform that parses codebases, performs AST-aware chunking, indexes structural and semantic software artifacts, and enables codebase-aware querying.",
     technologies: [
@@ -190,13 +191,21 @@ export const projects: ProjectItem[] = [
     githubUrl:
       "https://github.com/srisaiarun/GraphRAG-Engineering-Intelligence-Platform",
   },
+
   {
     id: "02",
     title: "ATS Resume Analyzer",
     subtitle: "AI Document Processing Service",
     description:
       "An ATS-oriented AI document processing system designed to process resume and job-description information, evaluate candidate profiles, detect skill gaps, and perform semantic matching.",
-    technologies: ["FastAPI", "Python", "MongoDB", "Gemini API", "Docker", "REST APIs"],
+    technologies: [
+      "FastAPI",
+      "Python",
+      "MongoDB",
+      "Gemini API",
+      "Docker",
+      "REST APIs",
+    ],
     capabilities: [
       "Multi-format document processing",
       "Unstructured text extraction",
@@ -206,16 +215,26 @@ export const projects: ProjectItem[] = [
       "MongoDB storage",
       "Dockerized services",
     ],
-    githubUrl: "https://github.com/srisaiarun/ats_telegram_bot",
-    liveUrl: "https://t.me/ats_arun_bot",
+    githubUrl:
+      "https://github.com/srisaiarun/ats_telegram_bot",
+    liveUrl:
+      "https://t.me/ats_arun_bot",
   },
+
   {
     id: "03",
     title: "AI Stock Assistant",
     subtitle: "Supply Chain Analytics & Natural Language Engine",
     description:
-      "A supply-chain analytics system that processes inventory metrics, tracks stock movement, identifies anomalies, and supports natural language querying over structured data.",
-    technologies: ["FastAPI", "Python", "SQL", "PostgreSQL", "AWS", "REST APIs"],
+      "A supply-chain analytics system that processes inventory metrics, tracks stock movement, identifies anomalies, and supports natural-language querying over structured data.",
+    technologies: [
+      "FastAPI",
+      "Python",
+      "SQL",
+      "PostgreSQL",
+      "AWS",
+      "REST APIs",
+    ],
     capabilities: [
       "Inventory analytics",
       "Stock movement tracking",
@@ -225,8 +244,10 @@ export const projects: ProjectItem[] = [
       "PostgreSQL",
       "Cloud deployment",
     ],
-    githubUrl: "https://github.com/srisaiarun/Ai-stock-assistant",
-    liveUrl: "https://ai-stock-assistant-0btj.onrender.com/",
+    githubUrl:
+      "https://github.com/srisaiarun/Ai-stock-assistant",
+    liveUrl:
+      "https://ai-stock-assistant-0btj.onrender.com/",
   },
 ];
 
